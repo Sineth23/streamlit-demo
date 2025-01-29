@@ -5,7 +5,10 @@ import pandas as pd
 import os
 from SRED import QueryCodebase  # Ensure the import matches your local module structure
 from langchain_community.vectorstores import DeepLake
-os.environ["ACTIVELOOP_TOKEN"] = st.secrets["ACTIVELOOP_TOKEN"]
+#os.environ["ACTIVELOOP_TOKEN"] = st.secrets["ACTIVELOOP_TOKEN"]
+
+os.environ["ACTIVELOOP_TOKEN"] = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9."
+
 # Streamlit Page Configuration
 st.set_page_config(
     page_title="SR&ED Chatbot",
