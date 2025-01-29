@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from SRED import QueryCodebase  # Ensure the import matches your local module structure
 from langchain_community.vectorstores import DeepLake
-
+os.environ["ACTIVELOOP_TOKEN"] = st.secrets["ACTIVELOOP_TOKEN"]
 # Streamlit Page Configuration
 st.set_page_config(
     page_title="SR&ED Chatbot",
@@ -13,7 +13,7 @@ st.set_page_config(
 
 # Sidebar Configuration
 st.sidebar.title("SR&ED Chatbot Configuration")
-dataset_path = st.sidebar.text_input("Dataset Path:", value="hub://activeloop/waio-portal-backend1")
+dataset_path = st.sidebar.text_input("Dataset Path:", value="hub://autodoctest/smiddygroup-waio-portal-backend")
 model_name = st.sidebar.text_input("Model Name:", value="sentence-transformers/all-MiniLM-L6-v2")
 openai_key = st.sidebar.text_input("OpenAI API Key:", value=os.getenv('OPENAI_API_KEY'), type="password")
 
