@@ -2,7 +2,7 @@ streamlit==1.27.2
 python-dotenv==1.0.1
 pandas==2.2.3
 torch==2.5.1
-torchvision==0.18.0  # Change this to match torch
+torchvision==0.18.0  # Make sure this is compatible
 torchaudio==2.5.0
 transformers==4.46.3
 deeplake==3.9.35
