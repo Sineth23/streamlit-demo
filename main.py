@@ -3,7 +3,6 @@
 # os.environ["ACTIVELOOP_TOKEN"] = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9."
 # os.environ["OPENAI_KEY"] = "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"
 
-
 import streamlit as st
 import pandas as pd
 import os
@@ -15,7 +14,8 @@ st.set_page_config(
     page_icon="🤖",
     layout="wide",
 )
-
+ os.environ["ACTIVELOOP_TOKEN"] = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9."
+ os.environ["OPENAI_KEY"] = "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"
 # Sidebar Configuration
 st.sidebar.title("SR&ED Chatbot Configuration")
 dataset_path = st.sidebar.text_input("Dataset Path:", value="hub://autodoctest/smiddygroup-waio-portal-backend")
@@ -124,4 +124,3 @@ if st.button("Run Query"):
             st.error(f"An error occurred: {e}")
     else:
         st.warning("Please select an issue key, choose a section, and enter a query.")
-
