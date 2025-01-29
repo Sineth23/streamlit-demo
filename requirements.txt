@@ -1,50 +1,16 @@
 # Streamlit and UI dependencies
-streamlit==1.12.0
-pandas==2.2.3
-numpy==1.26.4
-altair==4.2.0
-
-# DeepLake and Vector Store dependencies
-deeplake==3.9.35
-fsspec==2024.10.0
-lz4==4.3.3
-
-# LangChain and LLM dependencies
-langchain==0.3.9
-langchain-community==0.3.8
-langchain-core==0.3.21
-langchain-huggingface==0.1.2
-langchain-openai==0.2.10
-huggingface-hub==0.26.3
-transformers==4.46.3
-sentence-transformers==3.3.1
-
-# OpenAI integration
-openai==1.55.3
-tiktoken==0.8.0
-
-# Authentication and API requests
-requests==2.32.3
-urllib3==1.26.20
+strestreamlit==1.27.2
 python-dotenv==1.0.1
-
-# Utility dependencies
-protobuf==3.20.2
-six==1.16.0
-PyYAML==6.0.2
-regex==2024.11.6
-filelock==3.16.1
-packaging==24.2
-tenacity==9.0.0
-
-# JSON and Schema Validation
-jsonschema==4.23.0
-jsonschema-specifications==2024.10.1
-dataclasses-json==0.6.7
-
-# Other ML and Vector Search utilities
+pandas==2.2.3
 torch==2.5.1
-scipy==1.13.1
-scikit-learn==1.5.2
-joblib==1.4.2
-threadpoolctl==3.5.0
+torchvision==0.18.0
+torchaudio==2.5.0
+transformers==4.46.3
+deeplake==3.9.35
+langchain==0.3.9
+langchain-openai==0.2.10
+langchain-huggingface==0.1.2
+langchain-community==0.3.8
+sentence-transformers==3.3.1
+openai==1.55.3
+
