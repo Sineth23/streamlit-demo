@@ -7,8 +7,8 @@ from langchain_community.vectorstores import DeepLake
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain_openai.chat_models import ChatOpenAI
-from query_enhancer import QueryEnhancer
-from validation import validate_results
+#from query_enhancer import QueryEnhancer
+#from validation import validate_results
 
 load_dotenv()
 
@@ -313,9 +313,9 @@ class QueryCodebase:
 
     def perform_query(self, query_text: str, section_name: str) -> Tuple[str, List[Dict]]:
         """Enhance query, perform retrieval, and validate results."""
-        enhancer = QueryEnhancer()
-        enhanced_query = enhancer.enhance(query_text)
-        print(f"Enhanced Query: \"{enhanced_query}\"")
+        #enhancer = QueryEnhancer()
+        #enhanced_query = enhancer.enhance(query_text)
+        #print(f"Enhanced Query: \"{enhanced_query}\"")
 
         # Retrieve the prompt for the selected SR&ED section
         sred_prompt = sred_prompts.get(section_name, "")
@@ -402,7 +402,7 @@ Content:
             doc.metadata.setdefault('language', 'Unknown')
 
         results = {'results': source_documents}
-        validate_results(results, similarity_threshold=0.9)
+        #validate_results(results, similarity_threshold=0.9)
 
         print("\nAnswer:")
         print(answer)
