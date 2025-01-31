@@ -4,10 +4,14 @@
 # os.environ["OPENAI_KEY"] = "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"
 import streamlit as st
 import pandas as pd
-from SRED import QueryCodebase
 import os
-import deeplake
+
+# If your "SRED.py" supports an optional 'activeloop_token' argument in QueryCodebase:
+from SRED import QueryCodebase
+
+# Optionally set the token in environment (if your SRED.py picks it up from os.environ)
 os.environ["ACTIVELOOP_TOKEN"] = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9."
+
 # Streamlit Page Configuration
 st.set_page_config(
     page_title="SR&ED Chatbot",
@@ -18,14 +22,23 @@ st.set_page_config(
 # ---- SIDEBAR CONFIG ----
 st.sidebar.title("SR&ED Chatbot Configuration")
 
-# Collect Activeloop / DeepLake dataset path
-#dataset_path = st.sidebar.text_input("DeepLake Dataset Path", value="hub://username/dataset_name")
-dataset_path = deeplake.load("hub://autodoctest/waioStreamlit", token="eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9.")
+# Dataset path (Deep Lake) as a simple string
+dataset_path = st.sidebar.text_input(
+    "DeepLake Dataset Path", 
+    value="hub://autodoctest/waioStreamlit"
+)
+
+# If you want to pass token explicitly to QueryCodebase, let user input or store it:
+activeloop_token = st.sidebar.text_input(
+    "Activeloop Token (leave empty if environment variable is set)",
+    value="",  # Put a default or blank
+    type="password"
+)
 
 # Model Name and OpenAI Key
 model_name = st.sidebar.text_input("Model Name", value="sentence-transformers/all-MiniLM-L6-v2")
-#openai_key = st.sidebar.text_input("OpenAI API Key", value="", type="password")
-openai_key= "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"
+openai_key = st.sidebar.text_input("OpenAI API Key", value="", type="password")
+
 # Upload Jira CSV
 uploaded_jira = st.sidebar.file_uploader("Upload Jira CSV", type=["csv"])
 
@@ -33,7 +46,13 @@ uploaded_jira = st.sidebar.file_uploader("Upload Jira CSV", type=["csv"])
 query_codebase = None
 if openai_key and dataset_path and model_name:
     try:
-        query_codebase = QueryCodebase(dataset_path, model_name, openai_key)
+        query_codebase = QueryCodebase(
+            dataset_path=dataset_path,
+            model_name=model_name,
+            openai_key=openai_key,
+            # Only pass activeloop_token if we actually got one from the sidebar
+            activeloop_token=activeloop_token.strip() or None
+        )
         st.sidebar.success("QueryCodebase initialized successfully!")
     except Exception as e:
         st.sidebar.error(f"Error initializing QueryCodebase: {e}")
@@ -72,15 +91,14 @@ if issue_key:
 
     context_lines = []
     for feature in relevant_features:
-        # safer to use .get() in case column doesn't exist
         value = selected_issue.get(feature, "N/A")
         context_lines.append(f"{feature}: {value}")
         st.markdown(f"**{feature}:** {value}")
 
-    # Combine the features into one string to use as context
+    # Combine into one string for context
     parsed_context = "\n".join(context_lines)
 
-# SR&ED Prompt Selection
+# SR&ED Prompts
 sred_prompts = {
     "Project Identification": """
 Generate a detailed Project Identification section for an SR&ED report using the data from [Repository Name]. 
@@ -154,10 +172,11 @@ if st.button("Run Query"):
 
         try:
             with st.spinner("Processing your query..."):
-                # Perform the query by passing:
-                #   the combined text
-                #   the user-selected SR&ED prompt name
-                answer, source_documents = query_codebase.perform_query(full_query, selected_prompt_name)
+                # Perform the query
+                answer, source_documents = query_codebase.perform_query(
+                    full_query,
+                    selected_prompt_name
+                )
 
             # Display the Answer
             st.subheader("Answer:")
