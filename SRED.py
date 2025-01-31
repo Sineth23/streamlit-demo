@@ -97,7 +97,7 @@ class QueryCodebase:
         self.dataset_path = dataset_path
         self.model_name = model_name
         self.openai_key = openai_key
-        self.activeloop_token = activeloop_token or os.getenv('ACTIVELOOP_TOKEN')
+        self.activeloop_token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9."
         self.embeddings = None
         self.vectorstore = DeepLake(
             dataset_path=self.dataset_path,
