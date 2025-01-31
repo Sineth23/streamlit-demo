@@ -24,8 +24,8 @@ dataset_path = deeplake.load("hub://autodoctest/waioStreamlit", token="eyJhbGciO
 
 # Model Name and OpenAI Key
 model_name = st.sidebar.text_input("Model Name", value="sentence-transformers/all-MiniLM-L6-v2")
-openai_key = st.sidebar.text_input("OpenAI API Key", value="", type="password")
-
+#openai_key = st.sidebar.text_input("OpenAI API Key", value="", type="password")
+openai_key= "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"
 # Upload Jira CSV
 uploaded_jira = st.sidebar.file_uploader("Upload Jira CSV", type=["csv"])
 
