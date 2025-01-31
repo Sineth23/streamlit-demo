@@ -18,7 +18,8 @@ st.set_page_config(
 st.sidebar.title("SR&ED Chatbot Configuration")
 
 # Collect Activeloop / DeepLake dataset path
-dataset_path = st.sidebar.text_input("DeepLake Dataset Path", value="hub://username/dataset_name")
+#dataset_path = st.sidebar.text_input("DeepLake Dataset Path", value="hub://username/dataset_name")
+dataset_path = deeplake.load("hub://autodoctest/waioStreamlit", token="eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9.")
 
 # Model Name and OpenAI Key
 model_name = st.sidebar.text_input("Model Name", value="sentence-transformers/all-MiniLM-L6-v2")
