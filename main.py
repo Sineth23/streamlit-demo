@@ -31,7 +31,7 @@ dataset_path = st.sidebar.text_input(
 # If you want to pass token explicitly to QueryCodebase, let user input or store it:
 activeloop_token = st.sidebar.text_input(
     "Activeloop Token (leave empty if environment variable is set)",
-    value="",  # Put a default or blank
+    value="eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9.",  # Put a default or blank
     type="password"
 )
 
