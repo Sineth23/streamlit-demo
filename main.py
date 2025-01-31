@@ -5,7 +5,8 @@
 import streamlit as st
 import pandas as pd
 from SRED import QueryCodebase
-
+import os
+os.environ["ACTIVELOOP_TOKEN"] = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9."
 # Streamlit Page Configuration
 st.set_page_config(
     page_title="SR&ED Chatbot",
