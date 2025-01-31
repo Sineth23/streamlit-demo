@@ -93,11 +93,11 @@ Compile the Supporting Evidence section by:
 }
 
 class QueryCodebase:
-    def __init__(self, dataset_path: str, model_name: str, openai_key: str):
+    def __init__(self, dataset_path: str, model_name: str, openai_key: str, activeloop_token: str):
         self.dataset_path = dataset_path
         self.model_name = model_name
         self.openai_key = openai_key
-        self.activeloop_token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9."
+        self.activeloop_token = activeloop_token
         self.embeddings = None
         self.vectorstore = DeepLake(
             dataset_path=self.dataset_path,
