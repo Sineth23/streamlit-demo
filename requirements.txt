@@ -98,7 +98,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-Levenshtein==0.26.1
 pytz==2024.2
-pywin32==308
+#pywin32==308
 PyYAML==6.0.2
 RapidFuzz==3.10.1
 referencing==0.35.1
