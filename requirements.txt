@@ -4,11 +4,11 @@ python-dotenv==1.0.1
 streamlit==1.25.0
 pandas==2.2.3
 
-# LangChain & AI - using newer but compatible versions
-langchain==0.1.5  # Last version that supported Pydantic v1
-langchain-core==0.1.23  # Compatible version
-langchain-community==0.0.20  # Older community version
-langchain-huggingface==0.1.2
+# LangChain ecosystem - compatible versions
+langchain==0.0.347
+langchain-core==0.0.30
+langchain-community==0.0.14
+langchain-huggingface==0.0.3  # Older compatible version
 
 # Vector store and embeddings
 deeplake[enterprise]==3.9.38
@@ -17,13 +17,14 @@ transformers==4.46.3
 huggingface-hub==0.26.3
 
 # OpenAI integration
-openai==0.28.1  # Compatible version
-tiktoken==0.7.0
+openai==0.28.1
+tiktoken==0.5.2  # Older compatible version
 
 # Pydantic version that works with all components
 pydantic==1.10.13
 
-# Additional required packages
+# Required supporting packages
 typing-extensions==4.5.0
 numpy==1.24.4
 aiohttp==3.8.6
+anyio==3.7.1
