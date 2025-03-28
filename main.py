@@ -1,11 +1,12 @@
-# Querying script for ticketlabs project with S3 dataset support
+# Querying script for ticketlabs project with S3 dataset support - Fixed version
 
 import streamlit as st
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import DeepLake
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-from langchain_openai.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
+from langchain.globals import set_llm_cache
 import os
 
 # Streamlit Page Configuration
@@ -42,11 +43,14 @@ def initialize_components(s3_dataset_path, aws_access_key, aws_secret_key, model
     )
     retriever = vectorstore.as_retriever()
     retriever.search_kwargs['k'] = 20
+    
+    # Initialize ChatOpenAI with proper configuration
     llm = ChatOpenAI(
-        model_name='gpt-3.5-turbo',
+        model="gpt-3.5-turbo",
         openai_api_key=openai_key,
-        temperature=0.3,            
+        temperature=0.3,
     )
+    
     return retriever, llm
 
 # Chatbot Interface
