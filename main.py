@@ -1,11 +1,11 @@
-## Querying script for ticketlabs project with S3 dataset support - Final fixed version
-
+# Querying script with version-compatible implementations
 import streamlit as st
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import DeepLake
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI
+from langchain_openai import OpenAI
+from langchain_community.llms import OpenAI as CommunityOpenAI
 from langchain.cache import InMemoryCache
 from langchain.globals import set_llm_cache
 import os
@@ -48,18 +48,27 @@ def initialize_components(s3_dataset_path, aws_access_key, aws_secret_key, model
     retriever = vectorstore.as_retriever()
     retriever.search_kwargs['k'] = 20
     
-    # Initialize ChatOpenAI with proper configuration
-    llm = ChatOpenAI(
-        model_name="gpt-3.5-turbo",  # Using model_name instead of model
-        openai_api_key=openai_key,
-        temperature=0.3,
-    )
-    
-    # Rebuild the model to ensure proper initialization
+    # Version-compatible OpenAI initialization
     try:
-        llm.model_rebuild()
+        # Try newer version first
+        from langchain_openai import ChatOpenAI
+        llm = ChatOpenAI(
+            model_name="gpt-3.5-turbo",
+            openai_api_key=openai_key,
+            temperature=0.3,
+        )
     except Exception as e:
-        st.warning(f"Model rebuild warning: {str(e)}")
+        st.warning(f"ChatOpenAI init warning: {str(e)}. Falling back to OpenAI.")
+        try:
+            # Fallback to older version
+            llm = OpenAI(
+                model_name="gpt-3.5-turbo",
+                openai_api_key=openai_key,
+                temperature=0.3,
+            )
+        except Exception as e:
+            st.error(f"OpenAI initialization failed: {str(e)}")
+            raise
     
     return retriever, llm
 
