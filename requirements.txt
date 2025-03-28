@@ -18,5 +18,5 @@ sentence-transformers==3.3.1
 transformers==4.46.3
 huggingface-hub==0.26.3
 
- openai==0.28.1
- pydantic==1.10.12
+openai==0.28.1
+pydantic==1.10.12
