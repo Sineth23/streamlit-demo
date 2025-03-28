@@ -1,4 +1,4 @@
-# Querying script for ticketlabs project with S3 dataset support - Fixed version
+## Querying script for ticketlabs project with S3 dataset support - Final fixed version
 
 import streamlit as st
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
@@ -6,8 +6,12 @@ from langchain_community.vectorstores import DeepLake
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
+from langchain.cache import InMemoryCache
 from langchain.globals import set_llm_cache
 import os
+
+# Configure LLM caching
+set_llm_cache(InMemoryCache())
 
 # Streamlit Page Configuration
 st.set_page_config(
@@ -46,10 +50,16 @@ def initialize_components(s3_dataset_path, aws_access_key, aws_secret_key, model
     
     # Initialize ChatOpenAI with proper configuration
     llm = ChatOpenAI(
-        model="gpt-3.5-turbo",
+        model_name="gpt-3.5-turbo",  # Using model_name instead of model
         openai_api_key=openai_key,
         temperature=0.3,
     )
+    
+    # Rebuild the model to ensure proper initialization
+    try:
+        llm.model_rebuild()
+    except Exception as e:
+        st.warning(f"Model rebuild warning: {str(e)}")
     
     return retriever, llm
 
