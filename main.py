@@ -1,82 +1,139 @@
-#os.environ["ACTIVELOOP_TOKEN"] = st.secrets["ACTIVELOOP_TOKEN"]
-#dataset_path = st.sidebar.text_input("Dataset Path:", value="hub://autodoctest/smiddygroup-waio-portal-backend")
-# os.environ["ACTIVELOOP_TOKEN"] = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9."
-# os.environ["OPENAI_KEY"] = "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"
-# streamlit_sred.py
-
-# streamlit_sred.py
+# Querying script for ticketlabs project with S3 dataset support
 
 import streamlit as st
-import pandas as pd
+from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import DeepLake
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
+from langchain_openai.chat_models import ChatOpenAI
 import os
-from SRED import QueryCodebase
 
-# Streamlit config
-st.set_page_config(page_title="SR&ED Chatbot", layout="wide")
+# Streamlit Page Configuration
+st.set_page_config(
+    page_title="Code Query Chatbot",
+    page_icon="🤖",
+    layout="wide",
+)
 
-st.title("SR&ED Query Page")
-
-# --- Sidebar ---
-st.sidebar.header("Configuration")
-
-# Let user provide an Activeloop path, e.g. "hub://username/my_new_dataset"
-dataset_path = st.sidebar.text_input("Activeloop Dataset Path:", value="hub://autodoctest/waioStreamlit_v2")
+# Streamlit Sidebar Configuration
+st.sidebar.title("Configuration")
+s3_dataset_path = st.sidebar.text_input("S3 Dataset Path:", value="s3://autodocsolutions/waio-2025/")
+aws_access_key = st.sidebar.text_input("AWS Access Key:", value="AKIASFUIRTPQ5MZ4P4D3")
+aws_secret_key = st.sidebar.text_input("AWS Secret Key:", value="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")
 model_name = st.sidebar.text_input("Model Name:", value="sentence-transformers/all-MiniLM-L6-v2")
-openai_key = st.sidebar.text_input("OpenAI API Key:", value="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", type="password")
+openai_key = st.sidebar.text_input("OpenAI API Key:", value="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")
 
-# Optionally accept an Activeloop token if needed
-activeloop_token = st.sidebar.text_input("Activeloop Token (optional)", value="eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6InNpbmV0aDIzIiwiYXBpX2tleSI6Im50anUzeGhLN0xpTzFQWlpxWXZ6UG83Nm5hSVBJMVNDWTRQM3RJRjI0NDhpZiJ9.", type="password")
-if activeloop_token:
-    os.environ["ACTIVELOOP_TOKEN"] = activeloop_token
+# Initialize components
+def initialize_components(s3_dataset_path, aws_access_key, aws_secret_key, model_name, openai_key):
+    """Initialize embeddings, vectorstore, and retriever."""
+    # Configure AWS credentials
+    os.environ['AWS_ACCESS_KEY_ID'] = aws_access_key
+    os.environ['AWS_SECRET_ACCESS_KEY'] = aws_secret_key
+    
+    embeddings = HuggingFaceEmbeddings(model_name=model_name)
+    vectorstore = DeepLake(
+        dataset_path=s3_dataset_path,
+        read_only=True,
+        embedding=embeddings,
+        creds={
+            'aws_access_key_id': aws_access_key,
+            'aws_secret_access_key': aws_secret_key,
+        }
+    )
+    retriever = vectorstore.as_retriever()
+    retriever.search_kwargs['k'] = 20
+    llm = ChatOpenAI(
+        model_name='gpt-3.5-turbo',
+        openai_api_key=openai_key,
+        temperature=0.3,            
+    )
+    return retriever, llm
 
-# Initialize QueryCodebase
-query_codebase = None
-if dataset_path and model_name and openai_key:
-    query_codebase = QueryCodebase(dataset_path, model_name, openai_key)
-    st.sidebar.success("QueryCodebase initialized!")
-else:
-    st.sidebar.warning("Please provide dataset path, model name, and OpenAI key.")
+# Chatbot Interface
+st.title("Code Query Chatbot")
+st.write("""
+Welcome to the Code Query Chatbot! This tool assists with querying code files and scripts from your codebase stored in S3.
+""")
 
-# SR&ED Prompt Options
-sred_prompts = {
-    "Project Identification": "Project Identification",
-    "Technological Background": "Technological Background",
-    "Technological Uncertainties": "Technological Uncertainties",
-    "Technological Advancements": "Technological Advancements",
-    "Systematic Investigation": "Systematic Investigation",
-    "Supporting Evidence": "Supporting Evidence"
-}
+# Input for Query
+query_text = st.text_input("Enter your query (e.g., 'Show me any code that handles partial or fractional token transactions'):")
 
-st.sidebar.subheader("Choose SR&ED Section")
-selected_section = st.sidebar.selectbox("", list(sred_prompts.keys()))
+# Streamlit button for running query
+if st.button("Run Query"):
+    if query_text and s3_dataset_path and aws_access_key and aws_secret_key and model_name and openai_key:
+        st.write("**Query:**", query_text)
 
-# Query Input
-user_query = st.text_input("Enter your query here", "")
-
-# Run Query Button
-if st.button("Run SR&ED Query"):
-    if not query_codebase:
-        st.error("QueryCodebase not initialized. Check your config in the sidebar.")
-    elif not user_query.strip():
-        st.warning("Please enter a query before running.")
-    else:
-        st.write(f"**Selected Section**: {selected_section}")
-        st.write(f"**Your Query**: {user_query}")
         try:
-            with st.spinner("Processing..."):
-                answer, source_docs = query_codebase.perform_query(user_query, selected_section)
+            with st.spinner("Processing your query..."):
+                # Initialize components
+                retriever, llm = initialize_components(s3_dataset_path, aws_access_key, aws_secret_key, model_name, openai_key)
+
+                # Define the prompt template
+                prompt_template = """
+You are a technical documentation assistant. Your task is to:
+1. Analyze the provided code snippets and extract meaningful information.
+2. Focus on explaining what the code does and how it works.
+3. Provide specific details about functionality, features, and components.
+4. Include code examples and references where applicable.
+5. If you can't find meaningful information about the code's purpose, honestly state that.
+
+Using the following code snippets and their metadata, answer the question in detail.
+
+Code Snippets and Metadata:
+{context}
+
+Question:
+{question}
+
+Your answer should reference the file paths and provide a comprehensive and informative response.
+"""
+
+                custom_prompt = PromptTemplate(
+                    input_variables=["context", "question"],
+                    template=prompt_template,
+                )
+
+                # Create the QA chain
+                qa_chain = RetrievalQA.from_chain_type(
+                    llm=llm,
+                    chain_type='stuff',
+                    retriever=retriever,
+                    return_source_documents=True,
+                    chain_type_kwargs={
+                        "prompt": custom_prompt,
+                    },
+                )
+
+                # Perform the query
+                result = qa_chain.invoke({"query": query_text})
+                answer = result['result']
+                source_documents = result['source_documents']
+
+                # Filter out commit-related metadata
+                filtered_documents = []
+                for doc in source_documents:
+                    # Only include file path and code content
+                    filtered_doc = {
+                        "file_path": doc.metadata.get("file_path", "Unknown"),
+                        "code_content": doc.page_content,
+                    }
+                    filtered_documents.append(filtered_doc)
+
+            # Display Answer
             st.subheader("Answer:")
             st.write(answer)
 
-            # Show Source Docs
-            if source_docs:
-                st.subheader("Source Documents:")
-                for i, doc in enumerate(source_docs, start=1):
-                    meta = doc.metadata
-                    st.markdown(f"**Document {i}**")
-                    st.markdown(f"- **File Path**: {meta.get('file_path', 'Unknown')}")
-                    st.markdown(f"- **Author**: {meta.get('author_name', 'Unknown')}")
-                    st.markdown(f"- **Commit Message**: {meta.get('commit_message', 'No commit message')}")
-                    st.markdown("---")
-        except Exception as ex:
-            st.error(f"Error: {ex}")
+            # Display Filtered Source Documents
+            if filtered_documents:
+                st.subheader("Relevant Code Snippets:")
+                for doc in filtered_documents:
+                    st.write("- **File Path:**", doc["file_path"])
+                    st.code(doc["code_content"], language="python")
+                    st.write("---")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+    else:
+        st.warning("Please enter a query and provide all required inputs.")
+
+# Footer
+st.sidebar.info("Powered by AutoDoc AI")
